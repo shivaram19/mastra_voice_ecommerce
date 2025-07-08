@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Prisma schema for Ecommerce Bot with Pinecone
+
+model Product {
+  id               String    @id @default(cuid())
+  name             String
+  description      String?
+  sku              String    @unique
+  price            Float
+  quantity         Int
+  category         String?
+  brand            String?
+  imageUrl         String?
+  
+  // Pinecone integration fields
+  pineconeId       String?   @unique  // ID in Pinecone index
+  hasEmbedding     Boolean   @default(false)
+  lastEmbedded     DateTime?
+  isActive         Boolean   @default(true)  // Controls visibility in search
+  
+  // Metadata for search
+  tags             String[]  // Array of searchable tags
+  searchKeywords   String?   // Additional search terms
+  
+  // Timestamps
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  
+  // Relations
+  orderItems       OrderItem[]
+  
+  @@map("products")
+  @@index([isActive, quantity])
+  @@index([category])
+  @@index([brand])
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  customerName String
+  customerEmail String?
+  status      OrderStatus @default(PENDING)
+  total       Float
+  
+  // Order items
+  items       OrderItem[]
+  
+  // Timestamps
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float   // Price at time of order
+  
+  // Relations
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
+  
+  @@map("order_items")
+  @@unique([orderId, productId])
+}
+
+model EmbeddingJob {
+  id          String    @id @default(cuid())
+  status      JobStatus @default(PENDING)
+  productId   String?   // Null for bulk jobs
+  jobType     JobType
+  errorMessage String?
+  
+  // Progress tracking
+  totalItems  Int?
+  processedItems Int @default(0)
+  
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completedAt DateTime?
+  
+  @@map("embedding_jobs")
+  @@index([status, jobType])
+}
+
+// Enums
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum JobStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum JobType {
+  SINGLE_EMBED
+  BULK_EMBED
+  REMOVE_EMBED
+  UPDATE_EMBED
+}
