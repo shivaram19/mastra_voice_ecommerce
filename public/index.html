@@ -1,0 +1,102 @@
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastra Ecommerce Bot</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      .status {
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+      }
+
+      .success {
+        background-color: #d4edda;
+        color: #155724;
+      }
+
+      .error {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+
+      .endpoint {
+        margin: 15px 0;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 5px;
+      }
+
+      code {
+        background: #e9ecef;
+        padding: 2px 5px;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>🛍️ Mastra Ecommerce Bot</h1>
+      <p>Your AI-powered shopping assistant is running!</p>
+
+      <div id="status" class="status">
+        Checking server status...
+      </div>
+
+      <h2>🚀 API Endpoints</h2>
+      <div class="endpoint">
+        <strong>Chat:</strong> <code>POST /api/chat</code><br>
+        Test: Send a message to the ecommerce agent
+      </div>
+      <div class="endpoint">
+        <strong>Search:</strong> <code>POST /api/search</code><br>
+        Test: Search for products
+      </div>
+      <div class="endpoint">
+        <strong>Health:</strong> <code>GET /health</code><br>
+        Test: Check system health
+      </div>
+
+      <h2>📚 Documentation</h2>
+      <p>Check the README.md file for complete setup and usage instructions.</p>
+    </div>
+
+    <script>
+      // Check server health
+      fetch('/health')
+        .then(response => response.json())
+        .then(data => {
+          const statusDiv = document.getElementById('status');
+          statusDiv.className = 'status success';
+          statusDiv.textContent = `✅ Server is healthy! All services running.`;
+        })
+        .catch(error => {
+          const statusDiv = document.getElementById('status');
+          statusDiv.className = 'status error';
+          statusDiv.textContent = `❌ Server not responding. Make sure the service is running.`;
+        });
+    </script>
+  </body>
+
+  </html>
