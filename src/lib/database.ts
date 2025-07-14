@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma/client';
 import { JobStatus, JobType, Product } from '../generated/prisma/client';
 
 export const prisma = new PrismaClient({
@@ -126,7 +126,7 @@ export class DatabaseService {
             { lastEmbedded: null },
             {
               AND: [
-                { updatedAt: { gt: { lastEmbedded: true } } },
+                { updatedAt: new Date() },
                 { hasEmbedding: true }
               ]
             }

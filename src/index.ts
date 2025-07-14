@@ -39,120 +39,120 @@ app.get('/health', (req, res) => {
 });
 
 // Chat endpoint for ecommerce agent
-app.post('/api/chat', async (req, res) => {
-  try {
-    const { message, isVoiceInput = false } = req.body;
+// app.post('/api/chat', async (req, res) => {
+//   try {
+//     const { message, isVoiceInput = false } = req.body;
 
-    if (!message) {
-      return res.status(400).json({ error: 'Message is required' });
-    }
+//     if (!message) {
+//       return res.status(400).json({ error: 'Message is required' });
+//     }
 
-    const response = await ecommerceAgent.processMessage(message, isVoiceInput);
+//     const response = await ecommerceAgent.processMessage(message, isVoiceInput);
     
-    res.json({
-      success: true,
-      response,
-      timestamp: new Date().toISOString()
-    });
+//     res.json({
+//       success: true,
+//       response,
+//       timestamp: new Date().toISOString()
+//     });
 
-  } catch (error) {
-    console.error('Error in chat endpoint:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error'
-    });
-  }
-});
+//   } catch (error) {
+//     console.error('Error in chat endpoint:', error);
+//     res.status(500).json({
+//       success: false,
+//       error: 'Internal server error'
+//     });
+//   }
+// });
 
 // Streaming chat endpoint
-app.post('/api/chat/stream', (req, res) => {
-  try {
-    const { message, isVoiceInput = false } = req.body;
+// app.post('/api/chat/stream', (req, res) => {
+//   try {
+//     const { message, isVoiceInput = false } = req.body;
 
-    if (!message) {
-      return res.status(400).json({ error: 'Message is required' });
-    }
+//     if (!message) {
+//       return res.status(400).json({ error: 'Message is required' });
+//     }
 
-    // Set up SSE headers
-    res.writeHead(200, {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Cache-Control'
-    });
+//     // Set up SSE headers
+//     res.writeHead(200, {
+//       'Content-Type': 'text/event-stream',
+//       'Cache-Control': 'no-cache',
+//       'Connection': 'keep-alive',
+//       'Access-Control-Allow-Origin': '*',
+//       'Access-Control-Allow-Headers': 'Cache-Control'
+//     });
 
-    // Stream response
-    ecommerceAgent.streamResponse(message, isVoiceInput, (chunk) => {
-      res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
-    }).then((fullResponse) => {
-      res.write(`data: ${JSON.stringify({ done: true, fullResponse })}\n\n`);
-      res.end();
-    }).catch((error) => {
-      console.error('Error in streaming chat:', error);
-      res.write(`data: ${JSON.stringify({ error: 'Stream error' })}\n\n`);
-      res.end();
-    });
+//     // Stream response
+//     ecommerceAgent.streamResponse(message, isVoiceInput, (chunk) => {
+//       res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
+//     }).then((fullResponse) => {
+//       res.write(`data: ${JSON.stringify({ done: true, fullResponse })}\n\n`);
+//       res.end();
+//     }).catch((error) => {
+//       console.error('Error in streaming chat:', error);
+//       res.write(`data: ${JSON.stringify({ error: 'Stream error' })}\n\n`);
+//       res.end();
+//     });
 
-  } catch (error) {
-    console.error('Error setting up chat stream:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error'
-    });
-  }
-});
+//   } catch (error) {
+//     console.error('Error setting up chat stream:', error);
+//     res.status(500).json({
+//       success: false,
+//       error: 'Internal server error'
+//     });
+//   }
+// });
 
 // Product search endpoint
-app.post('/api/search', async (req , res) => {
-  try {
-    const { query, filters = {} } = req.body;
+// app.post('/api/search', async (req , res) => {
+//   try {
+//     const { query, filters = {} } = req.body;
 
-    if (!query) {
-      return res.status(400).json({ error: 'Search query is required' });
-    }
+//     if (!query) {
+//       return res.status(400).json({ error: 'Search query is required' });
+//     }
 
-    const response = await ecommerceAgent.processMessage(`Find ${query}`, false);
+//     const response = await ecommerceAgent.processMessage(`Find ${query}`, false);
     
-    res.json({
-      success: true,
-      response,
-      timestamp: new Date().toISOString()
-    });
+//     res.json({
+//       success: true,
+//       response,
+//       timestamp: new Date().toISOString()
+//     });
 
-  } catch (error) {
-    console.error('Error in search endpoint:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error'
-    });
-  }
-});
+//   } catch (error) {
+//     console.error('Error in search endpoint:', error);
+//     res.status(500).json({
+//       success: false,
+//       error: 'Internal server error'
+//     });
+//   }
+// });
 
 // Inventory management endpoints
-app.post('/api/inventory/update', async (req, res) => {
-  try {
-    const { productId, quantity } = req.body;
+// app.post('/api/inventory/update', async (req, res) => {
+//   try {
+//     const { productId, quantity } = req.body;
 
-    if (!productId || quantity === undefined) {
-      return res.status(400).json({ error: 'Product ID and quantity are required' });
-    }
+//     if (!productId || quantity === undefined) {
+//       return res.status(400).json({ error: 'Product ID and quantity are required' });
+//     }
 
-    const result = await inventoryAgent.processInventoryUpdate(productId, quantity);
+//     const result = await inventoryAgent.processInventoryUpdate(productId, quantity);
     
-    res.json({
-      ...result,
-      timestamp: new Date().toISOString()
-    });
+//     res.json({
+//       ...result,
+//       timestamp: new Date().toISOString()
+//     });
 
-  } catch (error) {
-    console.error('Error in inventory update endpoint:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
-});
+//   } catch (error) {
+//     console.error('Error in inventory update endpoint:', error);
+//     res.status(500).json({
+//       success: false,
+//       message: 'Internal server error'
+//     });
+//   }
+// });
 
 app.get('/api/inventory/report', async (req, res) => {
   try {

@@ -1,5 +1,5 @@
 import { Pinecone } from '@pinecone-database/pinecone';
-import { Product } from '@prisma/client';
+import { Product } from '../generated/prisma';
 
 export interface ProductMetadata {
   id: string;
@@ -97,7 +97,7 @@ export class PineconeService {
         {
           id: product.pineconeId || product.id,
           values: embedding,
-          metadata
+          // metadata
         }
       ]);
 
@@ -148,7 +148,7 @@ export class PineconeService {
         .map(match => ({
           id: match.id,
           score: match.score || 0,
-          metadata: match.metadata as ProductMetadata
+          metadata: match.metadata as unknown as ProductMetadata
         })) || [];
 
       console.log(`Found ${results.length} products for search`);
