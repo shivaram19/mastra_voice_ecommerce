@@ -39,124 +39,119 @@ app.get('/health', (req, res) => {
 });
 
 // Chat endpoint for ecommerce agent
-// app.post('/api/chat', async (req, res) => {
-//   try {
-//     const { message, isVoiceInput = false } = req.body;
+app.post('/api/chat', async (req, res) => {
+  console.log('Endpoint /api/chat hit with data:', req.body);
+  try {
+    const { message, isVoiceInput = false } = req.body;
 
-//     if (!message) {
-//       return res.status(400).json({ error: 'Message is required' });
-//     }
+    if (!message) {
+      console.error('Missing message in /api/chat');
+      res.status(400).json({ error: 'Message is required' });
+    }
 
-//     const response = await ecommerceAgent.processMessage(message, isVoiceInput);
+    const response = await ecommerceAgent.processMessage(message, isVoiceInput);
+    console.log('Endpoint /api/chat processed successfully');
     
-//     res.json({
-//       success: true,
-//       response,
-//       timestamp: new Date().toISOString()
-//     });
+    res.json({
+      success: true,
+      response,
+      timestamp: new Date().toISOString()
+    });
 
-//   } catch (error) {
-//     console.error('Error in chat endpoint:', error);
-//     res.status(500).json({
-//       success: false,
-//       error: 'Internal server error'
-//     });
-//   }
-// });
+  } catch (error) {
+    console.error('Error in /api/chat endpoint:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    });
+  }
+});
 
 // Streaming chat endpoint
-// app.post('/api/chat/stream', (req, res) => {
-//   try {
-//     const { message, isVoiceInput = false } = req.body;
+app.post('/api/chat/stream', async (req, res) => {
+  console.log('Endpoint /api/chat/stream hit with data:', req.body);
+  try {
+    const { message, isVoiceInput = false } = req.body;
 
-//     if (!message) {
-//       return res.status(400).json({ error: 'Message is required' });
-//     }
+    if (!message) {
+      console.error('Missing message in /api/chat/stream');
+      res.status(400).json({ error: 'Message is required' });
+    }
 
-//     // Set up SSE headers
-//     res.writeHead(200, {
-//       'Content-Type': 'text/event-stream',
-//       'Cache-Control': 'no-cache',
-//       'Connection': 'keep-alive',
-//       'Access-Control-Allow-Origin': '*',
-//       'Access-Control-Allow-Headers': 'Cache-Control'
-//     });
+    // Set up SSE headers
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Cache-Control'
+    });
 
-//     // Stream response
-//     ecommerceAgent.streamResponse(message, isVoiceInput, (chunk) => {
-//       res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
-//     }).then((fullResponse) => {
-//       res.write(`data: ${JSON.stringify({ done: true, fullResponse })}\n\n`);
-//       res.end();
-//     }).catch((error) => {
-//       console.error('Error in streaming chat:', error);
-//       res.write(`data: ${JSON.stringify({ error: 'Stream error' })}\n\n`);
-//       res.end();
-//     });
+    // Stream response
+    ecommerceAgent.streamResponse(message, isVoiceInput, (chunk) => {
+      console.log('Streaming chunk in /api/chat/stream:', chunk);
+      res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
+    }).then((fullResponse) => {
+      console.log('Completed streaming in /api/chat/stream');
+      res.write(`data: ${JSON.stringify({ done: true, fullResponse })}\n\n`);
+      res.end();
+    }).catch((error) => {
+      console.error('Error during streaming in /api/chat/stream:', error);
+      res.write(`data: ${JSON.stringify({ error: 'Stream error' })}\n\n`);
+      res.end();
+    });
 
-//   } catch (error) {
-//     console.error('Error setting up chat stream:', error);
-//     res.status(500).json({
-//       success: false,
-//       error: 'Internal server error'
-//     });
-//   }
-// });
+  } catch (error) {
+    console.error('Error setting up /api/chat/stream:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    });
+  }
+});
 
 // Product search endpoint
-// app.post('/api/search', async (req , res) => {
-//   try {
-//     const { query, filters = {} } = req.body;
+app.post('/api/search', async (req, res) => {
+  console.log('Endpoint /api/search hit with data:', req.body);
+  try {
+    const { query, filters = {} } = req.body;
 
-//     if (!query) {
-//       return res.status(400).json({ error: 'Search query is required' });
-//     }
+    if (!query) {
+      console.error('Missing search query in /api/search');
+      res.status(400).json({ error: 'Search query is required' });
+    }
 
-//     const response = await ecommerceAgent.processMessage(`Find ${query}`, false);
+    const response = await ecommerceAgent.processMessage(`Find ${query}`, false);
+    console.log('Endpoint /api/search processed successfully');
     
-//     res.json({
-//       success: true,
-//       response,
-//       timestamp: new Date().toISOString()
-//     });
+    res.json({
+      success: true,
+      response,
+      timestamp: new Date().toISOString()
+    });
 
-//   } catch (error) {
-//     console.error('Error in search endpoint:', error);
-//     res.status(500).json({
-//       success: false,
-//       error: 'Internal server error'
-//     });
-//   }
-// });
+  } catch (error) {
+    console.error('Error in /api/search endpoint:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    });
+  }
+});
 
 // Inventory management endpoints
-// app.post('/api/inventory/update', async (req, res) => {
-//   try {
-//     const { productId, quantity } = req.body;
-
-//     if (!productId || quantity === undefined) {
-//       return res.status(400).json({ error: 'Product ID and quantity are required' });
-//     }
-
-//     const result = await inventoryAgent.processInventoryUpdate(productId, quantity);
-    
-//     res.json({
-//       ...result,
-//       timestamp: new Date().toISOString()
-//     });
-
-//   } catch (error) {
-//     console.error('Error in inventory update endpoint:', error);
-//     res.status(500).json({
-//       success: false,
-//       message: 'Internal server error'
-//     });
-//   }
-// });
-
-app.get('/api/inventory/report', async (req, res) => {
+app.post('/api/inventory/update', async (req, res) => {
+  console.log('Endpoint /api/inventory/update hit with data:', req.body);
   try {
-    const result = await inventoryAgent.generateInventoryReport();
+    const { productId, quantity } = req.body;
+
+    if (!productId || quantity === undefined) {
+      console.error('Missing parameters in /api/inventory/update');
+      res.status(400).json({ error: 'Product ID and quantity are required' });
+    }
+
+    const result = await inventoryAgent.processInventoryUpdate(productId, quantity);
+    console.log('Endpoint /api/inventory/update processed successfully');
     
     res.json({
       ...result,
@@ -164,7 +159,27 @@ app.get('/api/inventory/report', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in inventory report endpoint:', error);
+    console.error('Error in /api/inventory/update endpoint:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+app.get('/api/inventory/report', async (req, res) => {
+  console.log('Endpoint /api/inventory/report hit');
+  try {
+    const result = await inventoryAgent.generateInventoryReport();
+    console.log('Endpoint /api/inventory/report processed successfully');
+    
+    res.json({
+      ...result,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error in /api/inventory/report endpoint:', error);
     res.status(500).json({
       success: false,
       error: 'Internal server error'
@@ -173,8 +188,10 @@ app.get('/api/inventory/report', async (req, res) => {
 });
 
 app.post('/api/inventory/maintenance', async (req, res) => {
+  console.log('Endpoint /api/inventory/maintenance hit');
   try {
     const result = await inventoryAgent.performLowStockMaintenance();
+    console.log('Endpoint /api/inventory/maintenance processed successfully');
     
     res.json({
       ...result,
@@ -182,7 +199,7 @@ app.post('/api/inventory/maintenance', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in inventory maintenance endpoint:', error);
+    console.error('Error in /api/inventory/maintenance endpoint:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -191,8 +208,10 @@ app.post('/api/inventory/maintenance', async (req, res) => {
 });
 
 app.post('/api/embeddings/sync', async (req, res) => {
+  console.log('Endpoint /api/embeddings/sync hit');
   try {
     const result = await inventoryAgent.syncAllEmbeddings();
+    console.log('Endpoint /api/embeddings/sync processed successfully');
     
     res.json({
       ...result,
@@ -200,7 +219,7 @@ app.post('/api/embeddings/sync', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in embedding sync endpoint:', error);
+    console.error('Error in /api/embeddings/sync endpoint:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -210,6 +229,7 @@ app.post('/api/embeddings/sync', async (req, res) => {
 
 // Product management endpoints
 app.get('/api/products', async (req, res) => {
+  console.log('Endpoint /api/products hit with query:', req.query);
   try {
     const { 
       category, 
@@ -227,6 +247,8 @@ app.get('/api/products', async (req, res) => {
       offset: parseInt(offset as string)
     });
 
+    console.log('Endpoint /api/products processed successfully, product count:', products.length);
+    
     res.json({
       success: true,
       products,
@@ -235,7 +257,7 @@ app.get('/api/products', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in products endpoint:', error);
+    console.error('Error in /api/products endpoint:', error);
     res.status(500).json({
       success: false,
       error: 'Internal server error'
@@ -244,8 +266,10 @@ app.get('/api/products', async (req, res) => {
 });
 
 app.get('/api/products/stats', async (req, res) => {
+  console.log('Endpoint /api/products/stats hit');
   try {
     const stats = await dbService.getProductStats();
+    console.log('Endpoint /api/products/stats processed successfully');
     
     res.json({
       success: true,
@@ -254,7 +278,7 @@ app.get('/api/products/stats', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in product stats endpoint:', error);
+    console.error('Error in /api/products/stats endpoint:', error);
     res.status(500).json({
       success: false,
       error: 'Internal server error'
@@ -263,8 +287,10 @@ app.get('/api/products/stats', async (req, res) => {
 });
 
 app.get('/api/categories', async (req, res) => {
+  console.log('Endpoint /api/categories hit');
   try {
     const categories = await dbService.getCategories();
+    console.log('Endpoint /api/categories processed successfully');
     
     res.json({
       success: true,
@@ -273,7 +299,7 @@ app.get('/api/categories', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in categories endpoint:', error);
+    console.error('Error in /api/categories endpoint:', error);
     res.status(500).json({
       success: false,
       error: 'Internal server error'
@@ -282,8 +308,10 @@ app.get('/api/categories', async (req, res) => {
 });
 
 app.get('/api/brands', async (req, res) => {
+  console.log('Endpoint /api/brands hit');
   try {
     const brands = await dbService.getBrands();
+    console.log('Endpoint /api/brands processed successfully');
     
     res.json({
       success: true,
@@ -292,7 +320,7 @@ app.get('/api/brands', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in brands endpoint:', error);
+    console.error('Error in /api/brands endpoint:', error);
     res.status(500).json({
       success: false,
       error: 'Internal server error'
